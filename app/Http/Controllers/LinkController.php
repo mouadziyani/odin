@@ -12,7 +12,8 @@ class LinkController extends Controller
      */
     public function index()
     {
-        //
+        $links = Link::all();
+        return view('links.index', compact('links'));
     }
 
     /**
@@ -20,7 +21,7 @@ class LinkController extends Controller
      */
     public function create()
     {
-        //
+        return view('links.create');
     }
 
     /**
@@ -28,7 +29,14 @@ class LinkController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'url' => 'required|url',
+        ]);
+
+        Link::create($request->only('title', 'url'));
+
+        return redirect()->route('links.index')->with('success', 'Link created successfully.');
     }
 
     /**
@@ -36,7 +44,7 @@ class LinkController extends Controller
      */
     public function show(link $link)
     {
-        //
+        return view('links.show', compact('link'));
     }
 
     /**
@@ -44,7 +52,7 @@ class LinkController extends Controller
      */
     public function edit(link $link)
     {
-        //
+        return view('links.edit', compact('link'));
     }
 
     /**
@@ -52,7 +60,14 @@ class LinkController extends Controller
      */
     public function update(Request $request, link $link)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'url' => 'required|url',
+        ]);
+
+        $link->update($request->only('title', 'url'));
+
+        return redirect()->route('links.index')->with('success', 'Link updated successfully.');
     }
 
     /**
@@ -60,6 +75,17 @@ class LinkController extends Controller
      */
     public function destroy(link $link)
     {
-        //
+        $link->delete();
+        return redirect()->route('links.index')
+            ->with('success', 'Link deleted successfully.');
+    }
+
+    /**
+     * Remove All links from storage.
+     */
+    public function delete_all()
+    {
+        link::truncate();
+        return redirect()->route('link.index')->with('success', 'All links deleted successfully.');
     }
 }

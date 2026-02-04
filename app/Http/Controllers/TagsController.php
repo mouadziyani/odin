@@ -12,7 +12,8 @@ class TagsController extends Controller
      */
     public function index()
     {
-        //
+        $tags = Tags::all();
+        return view('tags.index', compact('tags'));
     }
 
     /**
@@ -20,7 +21,7 @@ class TagsController extends Controller
      */
     public function create()
     {
-        //
+        return view('tags.create');
     }
 
     /**
@@ -28,7 +29,17 @@ class TagsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255|unique:tags,name',
+        ]);
+
+        Tags::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('tags.index')
+            ->with('success', 'Tag created successfully.');
     }
 
     /**
@@ -36,7 +47,7 @@ class TagsController extends Controller
      */
     public function show(tags $tags)
     {
-        //
+        return view('tags.show', compact('tags'));
     }
 
     /**
@@ -44,7 +55,7 @@ class TagsController extends Controller
      */
     public function edit(tags $tags)
     {
-        //
+        return view('tags.edit', compact('tags'));
     }
 
     /**
@@ -52,7 +63,17 @@ class TagsController extends Controller
      */
     public function update(Request $request, tags $tags)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255|unique:tags,name,' . $tags->id,
+        ]);
+
+        $tags->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('tags.index')
+            ->with('success', 'Tags updated successfully.');
     }
 
     /**
@@ -60,6 +81,21 @@ class TagsController extends Controller
      */
     public function destroy(tags $tags)
     {
-        //
+        $tag->delete();
+
+        return redirect()
+            ->route('tags.index')
+            ->with('success', 'Tag deleted successfully.');
+    }
+
+    /**
+     * Remove all tags.
+     */
+    public function delete_all()
+    {
+        Tag::truncate(); // delete all rows
+        return redirect()
+            ->route('tags.index')
+            ->with('success', 'All tags deleted successfully.');
     }
 }
